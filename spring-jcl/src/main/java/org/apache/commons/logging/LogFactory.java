@@ -68,6 +68,8 @@ public abstract class LogFactory {
 	}
 
 
+	/***********************************被弃用了********************************************/
+
 	/**
 	 * This method only exists for compatibility with unusual Commons Logging API
 	 * usage like e.g. {@code LogFactory.getFactory().getInstance(Class/String)}.

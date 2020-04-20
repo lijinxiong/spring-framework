@@ -28,9 +28,11 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
+ * spring 通用日志 适配器，
  * Spring's common JCL adapter behind {@link LogFactory} and {@link LogFactoryService}.
  * Detects the presence of Log4j 2.x / SLF4J, falling back to {@code java.util.logging}.
- *
+ * 检查是否存在log4j2 或者slf4j、如果没有这两者、则使用jul
+ * https://blog.csdn.net/liujianyangbj/article/details/104990100
  * @author Juergen Hoeller
  * @since 5.1
  */
@@ -48,7 +50,11 @@ final class LogAdapter {
 	private static final LogApi logApi;
 
 	static {
+		// 存在log4j
 		if (isPresent(LOG4J_SPI)) {
+			// 是否有 log4j 的 slf4j、并且提供了 locationAwarenessLogger、这个时候我们才使用slf4J、
+			// 否则的我们还是直接使用log4j干撸它、其实这个就是看看slf4j 的版本、
+			// 如果LOG4J 2.0 有一些新的特性、但是 slf4j 不支持、那么直接用回 LOG4J
 			if (isPresent(LOG4J_SLF4J_PROVIDER) && isPresent(SLF4J_SPI)) {
 				// log4j-to-slf4j bridge -> we'll rather go with the SLF4J SPI;
 				// however, we still prefer Log4j over the plain SLF4J API since
@@ -62,9 +68,11 @@ final class LogAdapter {
 		}
 		else if (isPresent(SLF4J_SPI)) {
 			// Full SLF4J SPI including location awareness support
+			// 里是对应 slf4j 1.3以及以后的版本，因为在1.3以后才有了LocationAwareLogger类
 			logApi = LogApi.SLF4J_LAL;
 		}
 		else if (isPresent(SLF4J_API)) {
+			// 这里是对应 slf4j 1.3之前的版本，之前的版本没有LocationAwareLogger类
 			// Minimal SLF4J API without location awareness support
 			logApi = LogApi.SLF4J;
 		}
@@ -113,9 +121,23 @@ final class LogAdapter {
 	}
 
 
-	private enum LogApi {LOG4J, SLF4J_LAL, SLF4J, JUL}
+	private enum LogApi {
+		/**
+		 * 直接使用 log4j 2.0 的版本、这个版本包含 位置感知能力(很生硬的翻译)
+		 */
+		LOG4J,
+		/**
+		 *
+		 */
+		SLF4J_LAL,
+		SLF4J,
+		JUL,;
+	}
 
 
+	/**
+	 * 或许真正的adapter 是 实现Log 接口的类
+	 */
 	private static class Log4jAdapter {
 
 		public static Log createLog(String name) {
@@ -146,6 +168,9 @@ final class LogAdapter {
 	}
 
 
+	/**
+	 * 里面包裹着真正的 log实现类
+	 */
 	@SuppressWarnings("serial")
 	private static class Log4jLog implements Log, Serializable {
 
@@ -272,7 +297,10 @@ final class LogAdapter {
 		}
 	}
 
-
+	/**
+	 * 里面包裹着真正的 log实现类
+	 * @param <T>
+	 */
 	@SuppressWarnings("serial")
 	private static class Slf4jLog<T extends Logger> implements Log, Serializable {
 
@@ -400,7 +428,9 @@ final class LogAdapter {
 		}
 	}
 
-
+	/**
+	 * 里面包裹着真正的 log实现类
+	 */
 	@SuppressWarnings("serial")
 	private static class Slf4jLocationAwareLog extends Slf4jLog<LocationAwareLogger> implements Serializable {
 
@@ -496,7 +526,9 @@ final class LogAdapter {
 		}
 	}
 
-
+	/**
+	 * 里面包裹着真正的 log实现类
+	 */
 	@SuppressWarnings("serial")
 	private static class JavaUtilLog implements Log, Serializable {
 
@@ -622,6 +654,9 @@ final class LogAdapter {
 	}
 
 
+	/**
+	 * 对 JUL 的 日志对象进行扩展
+	 */
 	@SuppressWarnings("serial")
 	private static class LocationResolvingLogRecord extends LogRecord {
 
