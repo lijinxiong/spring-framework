@@ -48,6 +48,10 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  */
 class ResourceTests {
 
+	/**
+	 * 测试 ByteArrayResource
+	 * @throws IOException
+	 */
 	@Test
 	void byteArrayResource() throws IOException {
 		Resource resource = new ByteArrayResource("testString".getBytes());
@@ -55,7 +59,20 @@ class ResourceTests {
 		assertThat(resource.isOpen()).isFalse();
 		String content = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));
 		assertThat(content).isEqualTo("testString");
+		// 每个字节数组的内容都相等
 		assertThat(new ByteArrayResource("testString".getBytes())).isEqualTo(resource);
+	}
+
+	@Test
+	void byteArrayResourceLjx() throws IOException {
+		//
+		Resource resource = new ByteArrayResource("testString".getBytes());
+		assertThat(resource.exists()).isTrue();
+		assertThat(resource.isOpen()).isFalse();
+		String content = FileCopyUtils.copyToString(new InputStreamReader(resource.getInputStream()));
+		System.out.println("FileCopyUtils.copyToString()-->" + content);
+		assertThat(content).isEqualTo("testString");
+		assertThat(new ByteArrayResource(content.getBytes())).isEqualTo(resource);
 	}
 
 	@Test

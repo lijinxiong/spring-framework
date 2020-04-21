@@ -25,6 +25,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 内部自身定义了一个成员变量、byte 数组 + 一个资源的描述符
  * {@link Resource} implementation for a given byte array.
  * <p>Creates a {@link ByteArrayInputStream} for the given byte array.
  *
@@ -111,6 +112,7 @@ public class ByteArrayResource extends AbstractResource {
 
 
 	/**
+	 * 骚断腿、直接比较字节数组的内容
 	 * This implementation compares the underlying byte array.
 	 * @see java.util.Arrays#equals(byte[], byte[])
 	 */

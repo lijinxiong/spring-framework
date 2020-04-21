@@ -34,9 +34,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ResourceUtils;
 
 /**
+ * 提前实现基本的方法
  * Convenience base class for {@link Resource} implementations,
  * pre-implementing typical behavior.
  *
+ * exists 方法 去检查这个资源是否是一个文件 或者这个InputStream 是否可以被打开
+ * isOpen 方法永远返回false
+ * getURL getFile 都会抛出异常
+ * toString 返回这个资源的描述
  * <p>The "exists" method will check whether a File or InputStream can
  * be opened; "isOpen" will always return false; "getURL" and "getFile"
  * throw an exception; and "toString" will return the description.
@@ -139,6 +144,7 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	/**
+	 *  根据 getInputStream() 的返回结果构建 ReadableByteChannel
 	 * This implementation returns {@link Channels#newChannel(InputStream)}
 	 * with the result of {@link #getInputStream()}.
 	 * <p>This is the same as in {@link Resource}'s corresponding default method
@@ -150,7 +156,10 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	/**
-	 * This implementation reads the entire InputStream to calculate the
+	 * 直接获取InputStream的字节长度
+	 * 子类可以优化下、
+	 * This implementation reads
+	 * the entire InputStream to calculate the
 	 * content length. Subclasses will almost always be able to provide
 	 * a more optimal version of this, e.g. checking a File length.
 	 * @see #getInputStream()
@@ -181,6 +190,7 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	/**
+	 * 返回资源最后的修改时间
 	 * This implementation checks the timestamp of the underlying File,
 	 * if available.
 	 * @see #getFileForLastModifiedCheck()
