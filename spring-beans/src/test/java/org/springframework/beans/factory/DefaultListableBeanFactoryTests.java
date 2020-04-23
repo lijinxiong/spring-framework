@@ -135,10 +135,13 @@ class DefaultListableBeanFactoryTests {
 
 	@Test
 	void unreferencedSingletonWasInstantiated() {
+		// 初始化环境、标志容器中没有实例化的对象
 		KnowsIfInstantiated.clearInstantiationRecord();
 		Properties p = new Properties();
 		p.setProperty("x1.(class)", KnowsIfInstantiated.class.getName());
+
 		assertThat(!KnowsIfInstantiated.wasInstantiated()).as("singleton not instantiated").isTrue();
+
 		(new PropertiesBeanDefinitionReader(lbf)).registerBeanDefinitions(p);
 		lbf.preInstantiateSingletons();
 		assertThat(KnowsIfInstantiated.wasInstantiated()).as("singleton was instantiated").isTrue();
@@ -3310,6 +3313,9 @@ class DefaultListableBeanFactoryTests {
 	@SuppressWarnings("unused")
 	private static class KnowsIfInstantiated {
 
+		/**
+		 * 是否已经实例化了
+		 */
 		private static boolean instantiated;
 
 		public static void clearInstantiationRecord() {
@@ -3320,6 +3326,9 @@ class DefaultListableBeanFactoryTests {
 			return instantiated;
 		}
 
+		/**
+		 * 创建对应实例的时候、将这个值设置为true
+		 */
 		public KnowsIfInstantiated() {
 			instantiated = true;
 		}
