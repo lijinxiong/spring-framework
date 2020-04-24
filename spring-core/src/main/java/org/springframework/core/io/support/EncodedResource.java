@@ -29,6 +29,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 就是一个包含字符编码集的 包装类
+ * 保证读取 到Resource的正确性
+ *
  * Holder that combines a {@link Resource} descriptor with a specific encoding
  * or {@code Charset} to be used for reading from the resource.
  *
@@ -169,6 +172,7 @@ public class EncodedResource implements InputStreamSource {
 			return false;
 		}
 		EncodedResource otherResource = (EncodedResource) other;
+		// 字符集 编码啊 resource 的比较要相同
 		return (this.resource.equals(otherResource.resource) &&
 				ObjectUtils.nullSafeEquals(this.charset, otherResource.charset) &&
 				ObjectUtils.nullSafeEquals(this.encoding, otherResource.encoding));

@@ -19,6 +19,8 @@ package org.springframework.core;
 import org.springframework.util.Assert;
 
 /**
+ *  ThreadLocal的子类、暴露了一个name 属性给外界、给到外部设置他的名字
+ *  骚断腿
  * {@link ThreadLocal} subclass that exposes a specified name
  * as {@link #toString()} result (allowing for introspection).
  *

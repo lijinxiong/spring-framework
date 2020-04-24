@@ -127,8 +127,18 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	private final XmlValidationModeDetector validationModeDetector = new XmlValidationModeDetector();
 
+	/**
+	 * 初始化 ThreadLocal
+	 */
 	private final ThreadLocal<Set<EncodedResource>> resourcesCurrentlyBeingLoaded =
 			new NamedThreadLocal<Set<EncodedResource>>("XML bean definition resources currently being loaded"){
+				/**
+				 * 重写这个方法就是为了后续第一次get的时候不会拿到一个 null的对象、省去了判断
+				 * 当然如果你get 之前已经set 过了、那么这个方法永远不会被调用
+				 * 、当然如果你remove一次、那么还是会调用回这个方法
+				 *
+				 * @return
+				 */
 				@Override
 				protected Set<EncodedResource> initialValue() {
 					return new HashSet<>(4);
@@ -300,9 +310,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 
 	/**
+	 * 从 xml 配置文件中装载bean definition
 	 * Load bean definitions from the specified XML file.
 	 * @param resource the resource descriptor for the XML file
-	 * @return the number of bean definitions found
+	 * @return the number of bean definitions found 找到了多少个 beanDefinition
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 */
 	@Override
@@ -318,13 +329,16 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 */
 	public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
+
 		Assert.notNull(encodedResource, "EncodedResource must not be null");
 		if (logger.isTraceEnabled()) {
 			logger.trace("Loading XML bean definitions from " + encodedResource);
 		}
 
+		// 从Thread Local 中获取已经加载了的资源
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 
+		// 判断这个资源是否已经加载过了、主要是为了是否是 资源的循环依赖
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException(
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
@@ -332,9 +346,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 		try (InputStream inputStream = encodedResource.getResource().getInputStream()) {
 			InputSource inputSource = new InputSource(inputStream);
+			// 有encode 就设置进去
 			if (encodedResource.getEncoding() != null) {
 				inputSource.setEncoding(encodedResource.getEncoding());
 			}
+
 			return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 		}
 		catch (IOException ex) {
@@ -342,6 +358,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 					"IOException parsing XML document from " + encodedResource.getResource(), ex);
 		}
 		finally {
+
+			// ThreadLocal的最佳实践
 			currentResources.remove(encodedResource);
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();
@@ -375,6 +393,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 
 	/**
+	 * 从xml 文件中 加载 bean definition
 	 * Actually load bean definitions from the specified XML file.
 	 * @param inputSource the SAX InputSource to read from
 	 * @param resource the resource descriptor for the XML file
@@ -387,7 +406,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 			throws BeanDefinitionStoreException {
 
 		try {
+			// 获取 document 对象
 			Document doc = doLoadDocument(inputSource, resource);
+			// 注册 bean definition
 			int count = registerBeanDefinitions(doc, resource);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loaded " + count + " bean definitions from " + resource);
@@ -420,6 +441,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	}
 
 	/**
+	 * getValidationModeForResource() 获取指定资源（xml）的验证模式。所以 doLoadBeanDefinitions()主要就是做了三件事情。
+	 * 1. 调用 getValidationModeForResource() 获取 xml 文件的验证模式
+	 * 2. 调用 loadDocument() 根据 xml 文件获取相应的 Document 实例。
+	 *
 	 * Actually load the specified document using the configured DocumentLoader.
 	 * @param inputSource the SAX InputSource to read from
 	 * @param resource the resource descriptor for the XML file
@@ -506,7 +531,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		// 创建一个 bean definition 的 reader
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		// 创建以前已经有的 bean definition 的个数 return this.beanDefinitionMap.size();
 		int countBefore = getRegistry().getBeanDefinitionCount();
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
 		return getRegistry().getBeanDefinitionCount() - countBefore;
