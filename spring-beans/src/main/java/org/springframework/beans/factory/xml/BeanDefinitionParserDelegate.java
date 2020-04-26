@@ -441,6 +441,7 @@ public class BeanDefinitionParserDelegate {
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 
 		if (beanDefinition != null) {
+			// 如果 beanName 为 空
 			if (!StringUtils.hasText(beanName)) {
 				try {
 					if (containingBean != null) {
@@ -448,6 +449,7 @@ public class BeanDefinitionParserDelegate {
 								beanDefinition, this.readerContext.getRegistry(), true);
 					}
 					else {
+						// 如果 没有配置 bean Name 没有配置alias 、并且他不是一个内部bean 、那么挺骚的、beanName 也包含在alias 数组中
 						beanName = this.readerContext.generateBeanName(beanDefinition);
 						// Register an alias for the plain bean class name, if still possible,
 						// if the generator returned the class name plus a suffix.
