@@ -19,6 +19,7 @@ package org.springframework.core;
 import org.springframework.lang.Nullable;
 
 /**
+ *  定义了一系列的方法去 访问和设定任意对象的元素据(他的属性)
  * Interface defining a generic contract for attaching and accessing metadata
  * to/from arbitrary objects.
  *
