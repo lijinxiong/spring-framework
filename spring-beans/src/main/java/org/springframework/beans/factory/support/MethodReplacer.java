@@ -33,7 +33,7 @@ public interface MethodReplacer {
 
 	/**
 	 * Reimplement the given method.
-	 * @param obj the instance we're reimplementing the method for
+	 * @param obj the instance we're reimplementing the method for 我们正在重新实现该方法的实例
 	 * @param method the method to reimplement
 	 * @param args arguments to the method
 	 * @return return value for the method
