@@ -58,14 +58,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 
 	/**
-	 * 用户定义的
+	 * 用户定义的、这个就是我们平常放进去spring 管理的对象、比如说service啊 component什么
 	 * Role hint indicating that a {@code BeanDefinition} is a major part
 	 * of the application. Typically corresponds to a user-defined bean.
 	 */
 	int ROLE_APPLICATION = 0;
 
 	/**
-	 * 配置类？
+	 * 配置类？  这个没有在我的spring 项目中有找到等于它的role
 	 * Role hint indicating that a {@code BeanDefinition} is a supporting
 	 * part of some larger configuration, typically an outer
 	 * {@link org.springframework.beans.factory.parsing.ComponentDefinition}.
