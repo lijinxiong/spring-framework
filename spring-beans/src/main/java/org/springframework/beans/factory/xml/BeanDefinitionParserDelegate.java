@@ -474,7 +474,7 @@ public class BeanDefinitionParserDelegate {
 			String[] aliasesArray = StringUtils.toStringArray(aliases);
 			return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
 		}
-
+		// nothing
 		return null;
 	}
 
