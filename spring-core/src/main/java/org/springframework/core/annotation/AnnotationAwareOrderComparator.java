@@ -16,16 +16,17 @@
 
 package org.springframework.core.annotation;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.core.DecoratingProxy;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.lang.Nullable;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
+import java.util.List;
+
 /**
+ * 处理 Ordered 接口 和 Order 注解 和 Priority 注解
  * {@code AnnotationAwareOrderComparator} is an extension of
  * {@link OrderComparator} that supports Spring's
  * {@link org.springframework.core.Ordered} interface as well as the
@@ -61,21 +62,29 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	@Override
 	@Nullable
 	protected Integer findOrder(Object obj) {
+		// 找一下 是否继承了 Ordered 接口
 		Integer order = super.findOrder(obj);
 		if (order != null) {
 			return order;
 		}
+
 		return findOrderFromAnnotation(obj);
 	}
 
 	@Nullable
 	private Integer findOrderFromAnnotation(Object obj) {
+
+
 		AnnotatedElement element = (obj instanceof AnnotatedElement ? (AnnotatedElement) obj : obj.getClass());
 		MergedAnnotations annotations = MergedAnnotations.from(element, SearchStrategy.TYPE_HIERARCHY);
+		// 从 注解中获取值
 		Integer order = OrderUtils.getOrderFromAnnotations(element, annotations);
+		// 如果为空的话、判断是否是 decoratingProxy
 		if (order == null && obj instanceof DecoratingProxy) {
+			// 使用真实class获取一次
 			return findOrderFromAnnotation(((DecoratingProxy) obj).getDecoratedClass());
 		}
+
 		return order;
 	}
 
@@ -88,6 +97,7 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 	@Override
 	@Nullable
 	public Integer getPriority(Object obj) {
+		// 本身是 class 对象
 		if (obj instanceof Class) {
 			return OrderUtils.getPriority((Class<?>) obj);
 		}
