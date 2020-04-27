@@ -330,6 +330,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/**
 	 * 找出 这个class的对象的实例、当然这个对象的class 可以是 requiredType 的子类或者实现类
+	 *
 	 * @param requiredType type the bean must match; can be an interface or superclass
 	 * @param <T>
 	 * @return
@@ -940,9 +941,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
-		//
+		// 看看缓冲是否有个 bean definition
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
+		//  1. 有这个 bean definition
 		if (existingDefinition != null) {
+			// 1.1 不允许 bean definition 覆盖、抛异常
 			if (!isAllowBeanDefinitionOverriding()) {
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			} else if (existingDefinition.getRole() < beanDefinition.getRole()) {
@@ -965,20 +968,27 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 							"] with [" + beanDefinition + "]");
 				}
 			}
+			// 1.2 允许bean definition 覆盖
 			this.beanDefinitionMap.put(beanName, beanDefinition);
 		} else {
+			// 2. 这个bean definition不存在缓存中、那么判断 spring 是否在创建阶段了、如果是的话、就要做并发控制
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
+
 					this.beanDefinitionMap.put(beanName, beanDefinition);
+
+					// copy on write
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
 					updatedDefinitions.addAll(this.beanDefinitionNames);
 					updatedDefinitions.add(beanName);
 					this.beanDefinitionNames = updatedDefinitions;
+
 					removeManualSingletonName(beanName);
 				}
 			} else {
 				// Still in startup registration phase
+				// 还是处在刚刚启动注册的阶段、那么就不需要并发控制了
 				this.beanDefinitionMap.put(beanName, beanDefinition);
 				this.beanDefinitionNames.add(beanName);
 				removeManualSingletonName(beanName);

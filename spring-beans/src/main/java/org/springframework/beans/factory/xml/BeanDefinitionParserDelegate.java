@@ -630,9 +630,13 @@ public class BeanDefinitionParserDelegate {
 	 * Parse the meta elements underneath the given element, if any.
 	 */
 	public void parseMetaElements(Element ele, BeanMetadataAttributeAccessor attributeAccessor) {
+
 		NodeList nl = ele.getChildNodes();
+
 		for (int i = 0; i < nl.getLength(); i++) {
+
 			Node node = nl.item(i);
+
 			if (isCandidateElement(node) && nodeNameEquals(node, META_ELEMENT)) {
 				Element metaElement = (Element) node;
 				String key = metaElement.getAttribute(KEY_ATTRIBUTE);
