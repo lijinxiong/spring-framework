@@ -24,6 +24,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * 持有一个beanDefinition 、bean Name 和 alias数组
  * Holder for a BeanDefinition with name and aliases.
  * Can be registered as a placeholder for an inner bean.
  *

@@ -16,56 +16,23 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanMetadataAttribute;
+import org.springframework.beans.BeanMetadataAttributeAccessor;
+import org.springframework.beans.PropertyValue;
+import org.springframework.beans.factory.config.*;
+import org.springframework.beans.factory.parsing.*;
+import org.springframework.beans.factory.support.*;
+import org.springframework.lang.Nullable;
+import org.springframework.util.*;
+import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.springframework.beans.BeanMetadataAttribute;
-import org.springframework.beans.BeanMetadataAttributeAccessor;
-import org.springframework.beans.PropertyValue;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.RuntimeBeanNameReference;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.config.TypedStringValue;
-import org.springframework.beans.factory.parsing.BeanEntry;
-import org.springframework.beans.factory.parsing.ConstructorArgumentEntry;
-import org.springframework.beans.factory.parsing.ParseState;
-import org.springframework.beans.factory.parsing.PropertyEntry;
-import org.springframework.beans.factory.parsing.QualifierEntry;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.AutowireCandidateQualifier;
-import org.springframework.beans.factory.support.BeanDefinitionDefaults;
-import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-import org.springframework.beans.factory.support.LookupOverride;
-import org.springframework.beans.factory.support.ManagedArray;
-import org.springframework.beans.factory.support.ManagedList;
-import org.springframework.beans.factory.support.ManagedMap;
-import org.springframework.beans.factory.support.ManagedProperties;
-import org.springframework.beans.factory.support.ManagedSet;
-import org.springframework.beans.factory.support.MethodOverrides;
-import org.springframework.beans.factory.support.ReplaceOverride;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.PatternMatchUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.util.xml.DomUtils;
+import java.util.*;
 
 /**
  * Stateful delegate class used to parse XML bean definitions.
@@ -437,6 +404,7 @@ public class BeanDefinitionParserDelegate {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
 
+		// 怎么生成一个BeanDefinition 尼
 		AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
 
 		if (beanDefinition != null) {
@@ -518,19 +486,23 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		try {
-			// 创建 genericBean definition
+			// 创建 GenericBeanDefinition
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
-
+			// 解释各种默认的属性
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
-
+			// 提取describe
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
-
+			// 解释元数据
 			parseMetaElements(ele, bd);
+			// look up 方法
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+			// replacer
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
-
+			// 解析构造函数参数
 			parseConstructorArgElements(ele, bd);
+			// 解释property子元素
 			parsePropertyElements(ele, bd);
+			// 解释qualifier
 			parseQualifierElements(ele, bd);
 
 			bd.setResource(this.readerContext.getResource());
@@ -560,7 +532,7 @@ public class BeanDefinitionParserDelegate {
 	 */
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
 																@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
-
+		// 解释scope 标签
 		if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
 			error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
 		} else if (ele.hasAttribute(SCOPE_ATTRIBUTE)) {
@@ -570,24 +542,29 @@ public class BeanDefinitionParserDelegate {
 			bd.setScope(containingBean.getScope());
 		}
 
+		// abstract 标签
 		if (ele.hasAttribute(ABSTRACT_ATTRIBUTE)) {
 			bd.setAbstract(TRUE_VALUE.equals(ele.getAttribute(ABSTRACT_ATTRIBUTE)));
 		}
 
+		// 延迟加载
 		String lazyInit = ele.getAttribute(LAZY_INIT_ATTRIBUTE);
 		if (isDefaultValue(lazyInit)) {
 			lazyInit = this.defaults.getLazyInit();
 		}
 		bd.setLazyInit(TRUE_VALUE.equals(lazyInit));
 
+		// 自动装配 标签
 		String autowire = ele.getAttribute(AUTOWIRE_ATTRIBUTE);
 		bd.setAutowireMode(getAutowireMode(autowire));
 
+		// 解析 depends-on 标签
 		if (ele.hasAttribute(DEPENDS_ON_ATTRIBUTE)) {
 			String dependsOn = ele.getAttribute(DEPENDS_ON_ATTRIBUTE);
 			bd.setDependsOn(StringUtils.tokenizeToStringArray(dependsOn, MULTI_VALUE_ATTRIBUTE_DELIMITERS));
 		}
 
+		// 自动装配候选bean
 		String autowireCandidate = ele.getAttribute(AUTOWIRE_CANDIDATE_ATTRIBUTE);
 		if (isDefaultValue(autowireCandidate)) {
 			String candidatePattern = this.defaults.getAutowireCandidates();
@@ -599,10 +576,12 @@ public class BeanDefinitionParserDelegate {
 			bd.setAutowireCandidate(TRUE_VALUE.equals(autowireCandidate));
 		}
 
+		// primary
 		if (ele.hasAttribute(PRIMARY_ATTRIBUTE)) {
 			bd.setPrimary(TRUE_VALUE.equals(ele.getAttribute(PRIMARY_ATTRIBUTE)));
 		}
 
+		// init method
 		if (ele.hasAttribute(INIT_METHOD_ATTRIBUTE)) {
 			String initMethodName = ele.getAttribute(INIT_METHOD_ATTRIBUTE);
 			bd.setInitMethodName(initMethodName);
@@ -611,6 +590,7 @@ public class BeanDefinitionParserDelegate {
 			bd.setEnforceInitMethod(false);
 		}
 
+		// destroy method
 		if (ele.hasAttribute(DESTROY_METHOD_ATTRIBUTE)) {
 			String destroyMethodName = ele.getAttribute(DESTROY_METHOD_ATTRIBUTE);
 			bd.setDestroyMethodName(destroyMethodName);
@@ -619,9 +599,11 @@ public class BeanDefinitionParserDelegate {
 			bd.setEnforceDestroyMethod(false);
 		}
 
+		// 工厂方法
 		if (ele.hasAttribute(FACTORY_METHOD_ATTRIBUTE)) {
 			bd.setFactoryMethodName(ele.getAttribute(FACTORY_METHOD_ATTRIBUTE));
 		}
+		// 工厂 bean name
 		if (ele.hasAttribute(FACTORY_BEAN_ATTRIBUTE)) {
 			bd.setFactoryBeanName(ele.getAttribute(FACTORY_BEAN_ATTRIBUTE));
 		}
@@ -668,11 +650,13 @@ public class BeanDefinitionParserDelegate {
 	 */
 	@SuppressWarnings("deprecation")
 	public int getAutowireMode(String attrValue) {
+
 		String attr = attrValue;
 		if (isDefaultValue(attr)) {
 			attr = this.defaults.getAutowire();
 		}
 		int autowire = AbstractBeanDefinition.AUTOWIRE_NO;
+
 		if (AUTOWIRE_BY_NAME_VALUE.equals(attr)) {
 			autowire = AbstractBeanDefinition.AUTOWIRE_BY_NAME;
 		} else if (AUTOWIRE_BY_TYPE_VALUE.equals(attr)) {
