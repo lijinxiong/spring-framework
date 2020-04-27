@@ -56,6 +56,7 @@ public interface Ordered {
 
 
 	/**
+	 * 值越大、优先级越低
 	 * Get the order value of this object.
 	 * <p>Higher values are interpreted as lower priority. As a consequence,
 	 * the object with the lowest value has the highest priority (somewhat
