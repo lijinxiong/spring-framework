@@ -16,12 +16,12 @@
 
 package org.springframework.core.annotation;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Map;
-
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ConcurrentReferenceHashMap;
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.Map;
 
 /**
  * General utility for determining the order of an object based on its type declaration.
@@ -40,7 +40,9 @@ public abstract class OrderUtils {
 
 	private static final String JAVAX_PRIORITY_ANNOTATION = "javax.annotation.Priority";
 
-	/** Cache for @Order value (or NOT_ANNOTATED marker) per Class. */
+	/** Cache for @Order value (or NOT_ANNOTATED marker) per Class.
+	 *  key 为class value 为 order的值 Integer
+	 * */
 	private static final Map<AnnotatedElement, Object> orderCache = new ConcurrentReferenceHashMap<>(64);
 
 
@@ -94,32 +96,46 @@ public abstract class OrderUtils {
 	 */
 	@Nullable
 	static Integer getOrderFromAnnotations(AnnotatedElement element, MergedAnnotations annotations) {
+		// 非class、不进行缓存
 		if (!(element instanceof Class)) {
 			return findOrder(annotations);
 		}
+
+		// 找出来并且缓存
 		Object cached = orderCache.get(element);
 		if (cached != null) {
 			return (cached instanceof Integer ? (Integer) cached : null);
 		}
+
 		Integer result = findOrder(annotations);
 		orderCache.put(element, result != null ? result : NOT_ANNOTATED);
 		return result;
 	}
 
+	/**
+	 * Order 注解 优先于 Priority 注解
+	 * @param annotations
+	 * @return Order 注解 和 Priority 的值
+	 */
 	@Nullable
 	private static Integer findOrder(MergedAnnotations annotations) {
+
 		MergedAnnotation<Order> orderAnnotation = annotations.get(Order.class);
+
 		if (orderAnnotation.isPresent()) {
 			return orderAnnotation.getInt(MergedAnnotation.VALUE);
 		}
+
 		MergedAnnotation<?> priorityAnnotation = annotations.get(JAVAX_PRIORITY_ANNOTATION);
 		if (priorityAnnotation.isPresent()) {
 			return priorityAnnotation.getInt(MergedAnnotation.VALUE);
 		}
+
 		return null;
 	}
 
 	/**
+	 * 获取 Priority 注解对应的 value的值 如果没有则为null
 	 * Return the value of the {@code javax.annotation.Priority} annotation
 	 * declared on the specified type, or {@code null} if none.
 	 * @param type the type to handle

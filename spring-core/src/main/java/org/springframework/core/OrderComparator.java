@@ -133,7 +133,7 @@ public class OrderComparator implements Comparator<Object> {
 	 * @param o1
 	 * @param o2
 	 * @param sourceProvider
-	 * @return
+	 * @return 负数的话就是 第一个参数小于第二个参数、正数的话就是第一个参数大于第二个参数
 	 */
 	private int doCompare(@Nullable Object o1, @Nullable Object o2, @Nullable OrderSourceProvider sourceProvider) {
 
@@ -141,13 +141,16 @@ public class OrderComparator implements Comparator<Object> {
 		boolean p2 = (o2 instanceof PriorityOrdered);
 
 		if (p1 && !p2) {
+			// o1 小于 o2(也就是o1的优先级大于o2)
 			return -1;
 		} else if (p2 && !p1) {
+			// o2 小于 o1（也就是o2的优先级大于o1）
 			return 1;
 		}
-
+		// 这个时候才去获取这两个对象的 order的值、如果没有实现Ordered的接口、则
 		int i1 = getOrder(o1, sourceProvider);
 		int i2 = getOrder(o2, sourceProvider);
+
 		return Integer.compare(i1, i2);
 	}
 
@@ -161,9 +164,12 @@ public class OrderComparator implements Comparator<Object> {
 	 */
 	private int getOrder(@Nullable Object obj, @Nullable OrderSourceProvider sourceProvider) {
 		Integer order = null;
+
 		if (obj != null && sourceProvider != null) {
+			// 从provider 中获取
 			Object orderSource = sourceProvider.getOrderSource(obj);
 			if (orderSource != null) {
+				// 是个数组
 				if (orderSource.getClass().isArray()) {
 					Object[] sources = ObjectUtils.toObjectArray(orderSource);
 					for (Object source : sources) {
@@ -173,6 +179,7 @@ public class OrderComparator implements Comparator<Object> {
 						}
 					}
 				} else {
+					// 单纯是一个对象
 					order = findOrder(orderSource);
 				}
 			}
@@ -181,6 +188,7 @@ public class OrderComparator implements Comparator<Object> {
 	}
 
 	/**
+	 * 如果没有实现 Order 接口的话、那么就是最低优先级
 	 * Determine the order value for the given object.
 	 * <p>The default implementation checks against the {@link Ordered} interface
 	 * through delegating to {@link #findOrder}. Can be overridden in subclasses.
@@ -199,6 +207,7 @@ public class OrderComparator implements Comparator<Object> {
 	}
 
 	/**
+	 * 判断这个对象是否是 Ordered 的实例、如果是的话、就调用getOrder方法、返回他的顺序值
 	 * Find an order value indicated by the given object.
 	 * <p>The default implementation checks against the {@link Ordered} interface.
 	 * Can be overridden in subclasses.

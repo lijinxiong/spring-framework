@@ -1629,7 +1629,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 			if (beanInstance != null) {
 
-				// 获取这个 bean 的优先级
+				// 获取这个 bean 的优先级 priority 不等价于 order
 				Integer candidatePriority = getPriority(beanInstance);
 
 				if (candidatePriority != null) {
@@ -1690,6 +1690,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	protected Integer getPriority(Object beanInstance) {
 		Comparator<Object> comparator = getDependencyComparator();
 		if (comparator instanceof OrderComparator) {
+			// AnnotationAwareOrderComparator.INSTANCE 都是这个了现在用的
 			return ((OrderComparator) comparator).getPriority(beanInstance);
 		}
 		return null;

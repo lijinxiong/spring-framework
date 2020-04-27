@@ -16,9 +16,9 @@
 
 package org.springframework.core.annotation;
 
-import javax.annotation.Priority;
-
 import org.junit.jupiter.api.Test;
+
+import javax.annotation.Priority;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +42,7 @@ class OrderUtilsTests {
 
 	@Test
 	void getOrderWithBoth() {
+		// Order 和 Priority 同时存在、先获取 Order 然后直接返回、因为人家名称本身就是getOrder、、不过分、 priority只是作为一个备份 order 的备份方案
 		assertThat(OrderUtils.getOrder(OrderAndPriority.class, null)).isEqualTo(Integer.valueOf(50));
 		assertThat(OrderUtils.getOrder(OrderAndPriority.class, null)).isEqualTo(Integer.valueOf(50));
 	}
@@ -60,8 +61,10 @@ class OrderUtilsTests {
 
 	@Test
 	void getPriorityValue() {
+		// getPriority 当然是拿Priority啊
 		assertThat(OrderUtils.getPriority(OrderAndPriority.class)).isEqualTo(Integer.valueOf(55));
 		assertThat(OrderUtils.getPriority(OrderAndPriority.class)).isEqualTo(Integer.valueOf(55));
+		assertThat(OrderUtils.getPriority(SimpleOrder.class)).isEqualTo(null);
 	}
 
 
