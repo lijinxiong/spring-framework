@@ -16,26 +16,15 @@
 
 package org.springframework.beans.factory.support;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanCreationNotAllowedException;
-import org.springframework.beans.factory.BeanCurrentlyInCreationException;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.beans.factory.*;
 import org.springframework.beans.factory.config.SingletonBeanRegistry;
 import org.springframework.core.SimpleAliasRegistry;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Generic registry for shared bean instances, implementing the
@@ -76,7 +65,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/** Cache of singleton factories: bean name to ObjectFactory. */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
-	/** Cache of early singleton objects: bean name to bean instance. */
+	/** Cache of early singleton objects: bean name to bean instance.
+	 * 存放的是 bean factory 产生的对象
+	 **/
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
 	/** Set of registered singletons, containing the bean names in registration order. */
@@ -174,15 +165,23 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+
 		Object singletonObject = this.singletonObjects.get(beanName);
+		// 这个bean 正处于 创建阶段
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+			// 并发控制
 			synchronized (this.singletonObjects) {
+				// 单例缓存是否存在
 				singletonObject = this.earlySingletonObjects.get(beanName);
+				// 是否运行获取 bean factory 创建出的 bean
 				if (singletonObject == null && allowEarlyReference) {
+					// 获取缓存中的 ObjectFactory
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
 						singletonObject = singletonFactory.getObject();
+						// 将对象缓存到 earlySingletonObject中
 						this.earlySingletonObjects.put(beanName, singletonObject);
+						// 从工厂缓冲中移除
 						this.singletonFactories.remove(beanName);
 					}
 				}
@@ -391,20 +390,25 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/**
 	 * Register a dependent bean for the given bean,
 	 * to be destroyed before the given bean is destroyed.
-	 * @param beanName the name of the bean
-	 * @param dependentBeanName the name of the dependent bean
+	 * @param beanName the name of the bean 被人家依赖的
+	 * @param dependentBeanName the name of the dependent bean 依赖别人的
 	 */
 	public void registerDependentBean(String beanName, String dependentBeanName) {
+
+
 		String canonicalName = canonicalName(beanName);
 
+		// 在这个里面加上 这个依赖我的人
 		synchronized (this.dependentBeanMap) {
 			Set<String> dependentBeans =
 					this.dependentBeanMap.computeIfAbsent(canonicalName, k -> new LinkedHashSet<>(8));
+
 			if (!dependentBeans.add(dependentBeanName)) {
 				return;
 			}
 		}
 
+		// 在这里将我依赖的 那个大佬放进去我依赖的列表中
 		synchronized (this.dependenciesForBeanMap) {
 			Set<String> dependenciesForBean =
 					this.dependenciesForBeanMap.computeIfAbsent(dependentBeanName, k -> new LinkedHashSet<>(8));
@@ -426,17 +430,27 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	private boolean isDependent(String beanName, String dependentBeanName, @Nullable Set<String> alreadySeen) {
+
 		if (alreadySeen != null && alreadySeen.contains(beanName)) {
 			return false;
 		}
+
 		String canonicalName = canonicalName(beanName);
+		// 找出依赖这个beanName的集合
 		Set<String> dependentBeans = this.dependentBeanMap.get(canonicalName);
+
+		// 没有人依赖这个beanName
 		if (dependentBeans == null) {
 			return false;
 		}
+
+		// 哦嚯、beanName 依赖的 bean、也依赖着beanName、完蛋
 		if (dependentBeans.contains(dependentBeanName)) {
 			return true;
 		}
+
+		// 看看依赖 beanName 的 其他依赖、有没有被dependentBeanName 依赖
+		// A 想依赖F、BCDE 依赖着A、那么我们现在来到这一步、已经确定了F不依赖A、那么我们要看看F是否依赖BCDE、如果依赖、那么就是循环依赖了
 		for (String transitiveDependency : dependentBeans) {
 			if (alreadySeen == null) {
 				alreadySeen = new HashSet<>();
