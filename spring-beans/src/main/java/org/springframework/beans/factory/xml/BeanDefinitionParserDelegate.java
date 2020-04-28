@@ -35,6 +35,7 @@ import org.w3c.dom.NodeList;
 import java.util.*;
 
 /**
+ * 有状态的委托类，用于解析XML bean定义。
  * Stateful delegate class used to parse XML bean definitions.
  * Intended for use by both the main parser and any extension
  * {@link BeanDefinitionParser BeanDefinitionParsers} or
