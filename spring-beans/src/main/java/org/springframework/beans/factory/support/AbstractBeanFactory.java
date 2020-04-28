@@ -303,12 +303,14 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 				}
 
+				// 我依赖的大哥都好了
 				// Create bean instance.
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
 							return createBean(beanName, mbd, args);
 						} catch (BeansException ex) {
+							// 显式的从单例缓存中 因为它可能被放进去缓存了 由于 单例模式下解决循环依赖
 							// Explicitly remove instance from singleton cache: It might have been put there
 							// eagerly by the creation process, to allow for circular reference resolution.
 							// Also remove any beans that received a temporary reference to the bean.
@@ -316,8 +318,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw ex;
 						}
 					});
+
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				} else if (mbd.isPrototype()) {
+					// 原型模式
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
@@ -328,6 +332,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					}
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				} else {
+					// 指定scope 创建bean
 					String scopeName = mbd.getScope();
 					final Scope scope = this.scopes.get(scopeName);
 					if (scope == null) {
@@ -357,6 +362,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 
 		// Check if required type matches the type of the actual bean instance.
+		// 检查需要的类型是否符合 bean 的实际类型
 		if (requiredType != null && !requiredType.isInstance(bean)) {
 			try {
 				T convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
@@ -1803,8 +1809,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			if (mbd == null && containsBeanDefinition(beanName)) {
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
-
+			// 是否是用户定义的而不是应用程序本身定义的
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
+
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);
 		}
 		return object;
