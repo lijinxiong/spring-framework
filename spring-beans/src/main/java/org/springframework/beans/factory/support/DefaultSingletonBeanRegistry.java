@@ -61,17 +61,22 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Cache of singleton objects: bean name to bean instance.
+	 * 存放的是单例 bean、对应关系是 bean Name --> bean instance
 	 */
 	private final Map<String, Object> singletonObjects = new ConcurrentHashMap<>(256);
 
 	/**
 	 * Cache of singleton factories: bean name to ObjectFactory.
+	 * 存放的是 ObjectFactory 、可以理解为创建单例bean的factory、对应关系是 bean name --> objectFactory
 	 */
 	private final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>(16);
 
 	/**
 	 * Cache of early singleton objects: bean name to bean instance.
-	 * 存放的是 bean factory 产生的对象
+	 * 存放的早期的 bean、对应的关系 也是 beanName --> bean instance
+	 * 与 singletonObjects 区别在于 earlySingletonObjects 中存放的bean 不一定是完整的、
+	 * bean 在创建过程中就加入到 earlySingletonObjects 中了、所以在bean创建过程中就可以通过getBean 方法获取、
+	 * 这个Map 也是解决循环依赖的关键所在
 	 **/
 	private final Map<String, Object> earlySingletonObjects = new HashMap<>(16);
 
@@ -82,6 +87,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Names of beans that are currently in creation.
+	 * 正在处于一个创建状态的 bean、存放的是 beanName
 	 */
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
@@ -183,8 +189,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/**
 	 * singletonObjects ：存放的是单例 bean，对应关系为 bean name --> bean instance
 	 * earlySingletonObjects：存放的是早期的 bean，对应关系也是 bean name --> bean instance。它与 singletonObjects
-	 *    区别在于 earlySingletonObjects 中存放的 bean 不一定是完整的，从上面过程中我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了，
-	 *    所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。这个 Map 也是解决循环依赖的关键所在。
+	 * 区别在于 earlySingletonObjects 中存放的 bean 不一定是完整的，从上面过程中我们可以了解，bean 在创建过程中就已经加入到 earlySingletonObjects 中了，
+	 * 所以当在 bean 的创建过程中就可以通过 getBean() 方法获取。这个 Map 也是解决循环依赖的关键所在。
 	 * singletonFactories：存放的是 ObjectFactory，可以理解为创建单例 bean 的 factory，对应关系是 bean name --> ObjectFactory
 	 * <p>
 	 * Return the (raw) singleton object registered under the given name.
@@ -355,6 +361,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * (within the entire factory).
 	 *
 	 * @param beanName the name of the bean
+	 * @see #beforeSingletonCreation
 	 */
 	public boolean isSingletonCurrentlyInCreation(String beanName) {
 		return this.singletonsCurrentlyInCreation.contains(beanName);
@@ -374,6 +381,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	}
 
 	/**
+	 * bean 创建完成了、我们就要将这个 bean 移出 正在创建的集合中了
+	 *
 	 * Callback after singleton creation.
 	 * <p>The default implementation marks the singleton as not in creation anymore.
 	 *

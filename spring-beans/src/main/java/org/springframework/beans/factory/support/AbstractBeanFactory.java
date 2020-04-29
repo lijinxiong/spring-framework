@@ -241,6 +241,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// 处理一下 factory bean 的情况
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		} else {
+			// 从 上面的 getSingleton 拿不到对象的bean 、说明这个bean的scope 要么不是 singleton 要这个bean是singleton 但是没有初始化一句
+
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			//  因为 Spring 只解决单例模式下得循环依赖，在原型模式下如果存在循环依赖则会抛出异常
@@ -1059,10 +1061,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
+	 * 判断这个 prototype 是否 循环依赖的创建
 	 * Return whether the specified prototype bean is currently in creation
 	 * (within the current thread).
 	 *
 	 * @param beanName the name of the bean
+	 * @see #beforePrototypeCreation
 	 */
 	protected boolean isPrototypeCurrentlyInCreation(String beanName) {
 		Object curVal = this.prototypesCurrentlyInCreation.get();
@@ -1071,6 +1075,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	/**
+	 * 创建 prototype bean 之前要执行的操作
 	 * Callback before prototype creation.
 	 * <p>The default implementation register the prototype as currently in creation.
 	 *
