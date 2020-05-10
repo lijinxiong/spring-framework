@@ -226,26 +226,19 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
-		// 检查缓冲中是否有这个bean
+		// 检查缓冲中是否有这个bean、spring中只是保存单例的bean
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
-
-			if (logger.isTraceEnabled()) {
-				if (isSingletonCurrentlyInCreation(beanName)) {
-					logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
-							"' that is not fully initialized yet - a consequence of a circular reference");
-				} else {
-					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
-				}
-			}
-			// 处理一下 factory bean 的情况
+			// 这里被我删除了一些spring  的log
+			// 处理一下 factory bean 的情况、包括从 factory beans 的缓存中获取、或者重新调用 factory bean 的 get bean 方法 包括一些回调
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		} else {
 			// 从 上面的 getSingleton 拿不到对象的bean 、说明这个bean的scope 要么不是 singleton 要这个bean是singleton 但是没有初始化一句
-
+			//
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			//  因为 Spring 只解决单例模式下得循环依赖，在原型模式下如果存在循环依赖则会抛出异常
+			// 这里的循环依赖检查使用的 是 threadLocal 因为 prototype 类型的只是
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
@@ -253,6 +246,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			// Check if bean definition exists in this factory.
 			// 如果容器中没有找到，则从父类容器中加载
 			BeanFactory parentBeanFactory = getParentBeanFactory();
+			// parentBeanFactory 不为空且 beanDefinitionMap 中不存该 name 的 BeanDefinition
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
 				// Not found -> check parent.
 				String nameToLookup = originalBeanName(name);
@@ -382,6 +376,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
 			}
 		}
+
 		return (T) bean;
 	}
 
@@ -1808,19 +1803,20 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		if (mbd != null) {
 			mbd.isFactoryBean = true;
 		} else {
-			//
+			// 从缓存中 看看有没有
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 
-		// 这段还是没看懂、
+		// 如果 bean factory 中还是没有
 		if (object == null) {
 			// Return bean instance from factory.
 			FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
 			// Caches object obtained from FactoryBean if it is a singleton.
+			// 从 缓存中拿到 bean definition
 			if (mbd == null && containsBeanDefinition(beanName)) {
 				mbd = getMergedLocalBeanDefinition(beanName);
 			}
-			// 是否是用户定义的而不是应用程序本身定义的
+			// 合成的
 			boolean synthetic = (mbd != null && mbd.isSynthetic());
 
 			object = getObjectFromFactoryBean(factory, beanName, !synthetic);

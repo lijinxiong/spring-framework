@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
 
 	/**
+	 * beanName: bean(factory bean 创建出来的)
 	 * Cache of singleton objects created by FactoryBeans: FactoryBean name to object.
 	 */
 	private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>(16);
@@ -98,7 +99,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 		if (factory.isSingleton() && containsSingleton(beanName)) {
 
 			synchronized (getSingletonMutex()) {
-				// 从缓存中获取指定的 factory Bean
+				// 从缓存中获取指定的 bean(这个bean 是从 factory bean 创建出来的)
 				Object object = this.factoryBeanObjectCache.get(beanName);
 
 				if (object == null) {
@@ -109,34 +110,37 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					// 从缓存中获取
 					Object alreadyThere = this.factoryBeanObjectCache.get(beanName);
 					if (alreadyThere != null) {
+						// 已经存放到 缓存中了、后续的操作就不需要了
 						object = alreadyThere;
 					} else {
-						//
+						// 需要做一些后置处理
 						if (shouldPostProcess) {
+							// 如果这个bean正在创建中、
 							if (isSingletonCurrentlyInCreation(beanName)) {
 								// Temporarily return non-post-processed object, not storing it yet..
 								return object;
 							}
-							// 前置处理
+							// 前置处理 主要是将这个bean 加入到正在创建中的队列 singletonsCurrentlyInCreation
 							beforeSingletonCreation(beanName);
 							try {
 								// 对 从 factoryBean 获取的对象进行后处理
-								// 生成对象将暴露给 bean 引用
+								// 生成对象将暴露给 bean 引用 并回调 beanPostProcessor
 								object = postProcessObjectFromFactoryBean(object, beanName);
 							} catch (Throwable ex) {
 								throw new BeanCreationException(beanName,
 										"Post-processing of FactoryBean's singleton object failed", ex);
 							} finally {
-								// 后置处理
+								// 后置处理 将其从 singletonsCurrentlyInCreation 移除
 								afterSingletonCreation(beanName);
 							}
 						}
-						// 缓存
+						// 他的 factory bean 已经存在 缓存中了、那么这个 factory bean 产生的bean 应该也要缓存一下
 						if (containsSingleton(beanName)) {
 							this.factoryBeanObjectCache.put(beanName, object);
 						}
 					}
 				}
+
 				return object;
 			}
 		} else {
@@ -157,6 +161,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 
 	/**
 	 * Obtain an object to expose from the given FactoryBean.
+	 * 获取对象然后暴露出去  从给定的FactoryBean
 	 *
 	 * @param factory  the FactoryBean instance
 	 * @param beanName the name of the bean

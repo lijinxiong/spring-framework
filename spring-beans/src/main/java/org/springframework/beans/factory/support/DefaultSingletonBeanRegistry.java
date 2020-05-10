@@ -484,7 +484,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @param dependentBeanName the name of the dependent bean
 	 * @since 4.0
 	 */
-	protected boolean isDependent(String beanName, String dependentBeanName) {
+	protected boolean /**/isDependent(String beanName, String dependentBeanName) {
 		synchronized (this.dependentBeanMap) {
 			return isDependent(beanName, dependentBeanName, null);
 		}
