@@ -67,7 +67,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 
 		// 保证以下的操作都是原子性的、如果并发注册的话就会存在 循环引用的问题
 		synchronized (this.aliasMap) {
-			// 如果 alias 等于bean name(当我们没有配置bean Name 和 alias的时候、他会帮我们这么做)
+
 			if (alias.equals(name)) {
 				// 这一步是有必要这么做的、如果这个 alias 已经被其他的 bean 所使用、那么我这个算是最新的了
 				// 至于为啥不放在 map 里面、因为key 和 value 一样的话、后面的 getAliases 会死循环

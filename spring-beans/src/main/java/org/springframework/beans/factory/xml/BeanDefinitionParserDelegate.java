@@ -416,7 +416,9 @@ public class BeanDefinitionParserDelegate {
 						beanName = BeanDefinitionReaderUtils.generateBeanName(
 								beanDefinition, this.readerContext.getRegistry(), true);
 					} else {
-						// 如果 没有配置 bean Name 没有配置alias 、并且他不是一个内部bean 、那么挺骚的、beanName 也包含在alias 数组中 
+						// 没有配置 beanName 和 alias的话、那么这个类的第一个实例、将拥有 全类名的alias
+						// org.springframework.beans.testfixture.beans.TestBean 这个是别名(TestBean#0 才拥有这个别名、其他的不配拥有)
+						// org.springframework.beans.testfixture.beans.TestBean#0 这个是 beanName
 						beanName = this.readerContext.generateBeanName(beanDefinition);
 						// Register an alias for the plain bean class name, if still possible,
 						// if the generator returned the class name plus a suffix.

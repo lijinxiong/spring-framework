@@ -50,7 +50,8 @@ public class XmlBeanDefinitionReaderTests {
 	@Test
 	public void withOpenInputStream() {
 		SimpleBeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
-		Resource resource = new InputStreamResource(getClass().getResourceAsStream("test.xml"));
+		Resource resource = new InputStreamResource(getClass().getResourceAsStream("ljx.xml"));
+		new XmlBeanDefinitionReader(registry).loadBeanDefinitions(resource);
 		assertThatExceptionOfType(BeanDefinitionStoreException.class).isThrownBy(() ->
 				new XmlBeanDefinitionReader(registry).loadBeanDefinitions(resource));
 	}
@@ -125,7 +126,7 @@ public class XmlBeanDefinitionReaderTests {
 
 	@Test
 	public void dtdValidationAutodetect() {
-		doTestValidation("validateWithDtd.xml");
+		doTestValidation("ljx.xml");
 	}
 
 	@Test
@@ -137,7 +138,12 @@ public class XmlBeanDefinitionReaderTests {
 		DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
 		Resource resource = new ClassPathResource(resourceName, getClass());
 		new XmlBeanDefinitionReader(factory).loadBeanDefinitions(resource);
-		TestBean bean = (TestBean) factory.getBean("testBean");
+		TestBean bean = (TestBean) factory.getBean("org.springframework.beans.testfixture.beans.TestBean#0");
+		TestBean aliasBean = (TestBean) factory.getBean("org.springframework.beans.testfixture.beans.TestBean");
+		TestBean bean1 = (TestBean) factory.getBean("org.springframework.beans.testfixture.beans.TestBean#1");
+		System.out.println(aliasBean == bean);
+		System.out.println("=======");
+		System.out.println(bean.toString());
 		assertThat(bean).isNotNull();
 	}
 

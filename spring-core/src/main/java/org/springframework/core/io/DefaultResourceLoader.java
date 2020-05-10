@@ -152,16 +152,16 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 
 	@Override
-	public Resource getResource(String location) {
-		Assert.notNull(location, "Location must not be null");
+		public Resource getResource(String location) {
+			Assert.notNull(location, "Location must not be null");
 
-		// 协议解释
-		for (ProtocolResolver protocolResolver : getProtocolResolvers()) {
-			Resource resource = protocolResolver.resolve(location, this);
-			if (resource != null) {
-				return resource;
+			// 协议解释
+			for (ProtocolResolver protocolResolver : getProtocolResolvers()) {
+				Resource resource = protocolResolver.resolve(location, this);
+				if (resource != null) {
+					return resource;
+				}
 			}
-		}
 
 		// 如果以/ 开头、则创建 ClassPathContextResource、其实也是一个 ClassPathResource 是他的子类、 类路径的资源
 		if (location.startsWith("/")) {
