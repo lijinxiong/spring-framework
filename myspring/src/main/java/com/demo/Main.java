@@ -4,6 +4,7 @@ import com.demo.data.Person;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 /**
  * @author jinxiong
@@ -11,10 +12,9 @@ import org.springframework.core.io.ClassPathResource;
 public class Main {
 
 	public static void main(String[] args) {
+		Resource resource = new ClassPathResource("coderLi.xml");
 		DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(defaultListableBeanFactory);
-		xmlBeanDefinitionReader.loadBeanDefinitions(new ClassPathResource("coderLi.xml"));
-		Person bean = defaultListableBeanFactory.getBean(Person.class);
-		System.out.println(bean.toString());
+		xmlBeanDefinitionReader.loadBeanDefinitions(resource);
 	}
 }

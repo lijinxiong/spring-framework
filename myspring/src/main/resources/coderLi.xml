@@ -4,7 +4,7 @@
 <beans>
 	<bean class="com.demo.data.Person">
 		<description>
-			I have no properties and I'm happy without them.
+			微信搜一搜:CoderLi
 		</description>
 	</bean>
 
