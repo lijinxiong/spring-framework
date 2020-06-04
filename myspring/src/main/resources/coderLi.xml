@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "https://www.springframework.org/dtd/spring-beans-2.0.dtd">
 
-<beans>
-	<bean class="com.demo.data.Person">
-		<description>
-			微信搜一搜:CoderLi
-		</description>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean class="com.demo.data.Egg" id="egg">
+<!--		<constructor-arg type="com.demo.data.Chicken" ref="chicken"/>-->
+	</bean>
+	<bean class="com.demo.data.Chicken" id="chicken">
+<!--		<constructor-arg type="com.demo.data.Egg" ref="egg"/>-->
 	</bean>
 
 </beans>

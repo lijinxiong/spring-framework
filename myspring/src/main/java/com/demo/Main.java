@@ -16,5 +16,6 @@ public class Main {
 		DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(defaultListableBeanFactory);
 		xmlBeanDefinitionReader.loadBeanDefinitions(resource);
+		defaultListableBeanFactory.getBean("egg");
 	}
 }

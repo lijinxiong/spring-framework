@@ -265,7 +265,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 
-			// 如果不是仅仅做类型检查则是创建bean，这里需要记录
+			// 如果不是仅仅做类型检查则是创建bean，标记这个bean 已经创建了或者将要被创建
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
@@ -1177,6 +1177,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @return the original bean name
 	 */
 	protected String originalBeanName(String name) {
+		// 找出 name 的 beanName 从 AliasRegistry 中
 		String beanName = transformedBeanName(name);
 		if (name.startsWith(FACTORY_BEAN_PREFIX)) {
 			beanName = FACTORY_BEAN_PREFIX + beanName;
