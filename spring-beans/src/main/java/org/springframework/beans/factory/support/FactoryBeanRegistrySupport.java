@@ -107,7 +107,9 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					object = doGetObjectFromFactoryBean(factory, beanName);
 					// Only post-process and store if not put there already during getObject() call above
 					// (e.g. because of circular reference processing triggered by custom getBean calls)
-					// 从缓存中获取
+					// 从缓存中获取、这里实在是太妙了、如果在 FactoryBean 中 调用getBean 获取其他的 bean
+					// 而其他的 bean 又依赖这个 bean、那么就构成了一个循环依赖、那么我们就再一次判断缓存里面是否有 bean 就可以了
+					// 秒秒秒
 					Object alreadyThere = this.factoryBeanObjectCache.get(beanName);
 					if (alreadyThere != null) {
 						// 已经存放到 缓存中了、后续的操作就不需要了

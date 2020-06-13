@@ -1851,8 +1851,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected boolean requiresDestruction(Object bean, RootBeanDefinition mbd) {
 		return (bean.getClass() != NullBean.class &&
-				(DisposableBeanAdapter.hasDestroyMethod(bean, mbd) || (hasDestructionAwareBeanPostProcessors() &&
-						DisposableBeanAdapter.hasApplicableProcessors(bean, getBeanPostProcessors()))));
+				(DisposableBeanAdapter.hasDestroyMethod(bean, mbd) ||
+						(hasDestructionAwareBeanPostProcessors() &&
+						DisposableBeanAdapter.hasApplicableProcessors(bean, getBeanPostProcessors()))
+				));
 	}
 
 	/**

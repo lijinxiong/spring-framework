@@ -6,10 +6,13 @@ import org.springframework.stereotype.Component;
 
 public class Egg {
 
-	@Autowired
 	private Chicken chicken;
 
 	public Egg() {
 		System.out.println();
+	}
+
+	public void setChicken(Chicken chicken) {
+		this.chicken = chicken;
 	}
 }

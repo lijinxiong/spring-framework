@@ -4,10 +4,20 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<bean class="com.demo.data.Egg" id="egg">
+		<property name="chicken" ref="chicken"/>
 <!--		<constructor-arg type="com.demo.data.Chicken" ref="chicken"/>-->
 	</bean>
-	<bean class="com.demo.data.Chicken" id="chicken">
-<!--		<constructor-arg type="com.demo.data.Egg" ref="egg"/>-->
+	<bean class="com.demo.data.Chicken" id="chicken" destroy-method="destroyMethod">
+		<property name="cat" ref="cat"/>
+		<!--		<constructor-arg type="com.demo.data.Egg" ref="egg"/>-->
 	</bean>
 
+	<bean class="com.demo.data.Person" id="person" lazy-init="false">
+		<property name="egg">
+			<bean class="com.demo.data.Egg"/>
+		</property>
+
+	</bean>
+
+	<bean class="com.demo.data.CatFactoryBean" id="cat"/>
 </beans>

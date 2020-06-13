@@ -1,13 +1,17 @@
 package com.demo.data;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class Chicken {
-	@Autowired
-	private Egg egg;
 
+	private Cat cat;
 	public Chicken() {
+	}
 
+	public void destroyMethod() {
+		System.out.println("destroy method");
+	}
+	public void setCat(Cat cat) {
+		this.cat = cat;
 	}
 }

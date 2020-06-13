@@ -16,6 +16,10 @@ public class Main {
 		DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory();
 		XmlBeanDefinitionReader xmlBeanDefinitionReader = new XmlBeanDefinitionReader(defaultListableBeanFactory);
 		xmlBeanDefinitionReader.loadBeanDefinitions(resource);
-		defaultListableBeanFactory.getBean("egg");
+//		Object egg = defaultListableBeanFactory.getBean("egg");
+//		Object person = defaultListableBeanFactory.getBean("person");
+		Object cat = defaultListableBeanFactory.getBean("cat");
+//		System.out.println(egg);
+		defaultListableBeanFactory.destroySingletons();
 	}
 }

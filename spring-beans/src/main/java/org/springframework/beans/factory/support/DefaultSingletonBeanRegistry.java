@@ -82,6 +82,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Set of registered singletons, containing the bean names in registration order.
+	 * 只要是加入到缓存中到 beanName 都会被注册到这个 set 无论是第三级缓存或者是第一级缓存
 	 */
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
 
@@ -94,28 +95,34 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 	/**
 	 * Names of beans currently excluded from in creation checks.
+	 * 不用在创建的时候检查循环依赖的 beanName 名称
 	 */
 	private final Set<String> inCreationCheckExclusions =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
 	/**
 	 * List of suppressed Exceptions, available for associating related causes.
+	 * 收集一些并不影响主流程的异常，可用于后续再次抛出的时候做一些关联，或者只是收集而不抛出
 	 */
 	@Nullable
 	private Set<Exception> suppressedExceptions;
 
 	/**
 	 * Flag that indicates whether we're currently within destroySingletons.
+	 * 表明是否正处于一个正在销毁 singleton 的过程
 	 */
 	private boolean singletonsCurrentlyInDestruction = false;
 
 	/**
 	 * Disposable bean instances: bean name to disposable instance.
+	 * beanName:需要执行destroyMethod 的bean
 	 */
 	private final Map<String, Object> disposableBeans = new LinkedHashMap<>();
 
 	/**
 	 * Map between containing bean names: bean name to Set of bean names that the bean contains.
+	 * key: 外部的 beanName
+	 * value 外部 bean 依赖的一些内部 bean
 	 */
 	private final Map<String, Set<String>> containedBeanMap = new ConcurrentHashMap<>(16);
 
@@ -390,7 +397,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @see #isSingletonCurrentlyInCreation
 	 */
 	protected void beforeSingletonCreation(String beanName) {
-		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.add(beanName)) {
+		if (!this.inCreationCheckExclusions.contains(beanName) &&
+				!this.singletonsCurrentlyInCreation.add(beanName)) {
 			throw new BeanCurrentlyInCreationException(beanName);
 		}
 	}
