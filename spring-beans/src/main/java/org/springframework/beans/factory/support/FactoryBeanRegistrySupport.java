@@ -117,7 +117,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 					} else {
 						// 需要做一些后置处理
 						if (shouldPostProcess) {
-							// 如果这个bean正在创建中、
+							// 如果这个bean正在创建中、(为啥在这一步进行检测)
 							if (isSingletonCurrentlyInCreation(beanName)) {
 								// Temporarily return non-post-processed object, not storing it yet..
 								return object;
