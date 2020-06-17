@@ -32,6 +32,9 @@ import org.springframework.util.ObjectUtils;
  * The remaining settings will <i>always</i> be taken from the child definition:
  * depends on, autowire mode, dependency check, singleton, lazy init.
  *
+ * 2.5 之后、以编程的方式注册一个 beanDefinition 首选的方式应该是使用 GenericBeanDefinition
+ *  因为它可以动态的定义 父 beanDefinition 通过 setParentName 的方法、
+ *  在大多数场景下可以有效的取代 ChildBeanDefinition
  * <p><b>NOTE:</b> Since Spring 2.5, the preferred way to register bean
  * definitions programmatically is the {@link GenericBeanDefinition} class,
  * which allows to dynamically define parent dependencies through the
