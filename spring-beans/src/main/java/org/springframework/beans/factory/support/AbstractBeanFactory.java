@@ -1256,6 +1256,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throws BeansException {
 		// Quick check on the concurrent map first, with minimal locking.
 		RootBeanDefinition mbd = this.mergedBeanDefinitions.get(beanName);
+		// 这个不是腐旧的
 		if (mbd != null && !mbd.stale) {
 			return mbd;
 		}
@@ -1298,6 +1299,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 			// Check with full lock now in order to enforce the same merged instance.
 			if (containingBd == null) {
+				// Map<String, RootBeanDefinition>
 				mbd = this.mergedBeanDefinitions.get(beanName);
 			}
 

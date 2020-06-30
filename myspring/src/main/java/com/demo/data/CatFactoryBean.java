@@ -13,8 +13,7 @@ public class CatFactoryBean implements FactoryBean<Cat>, BeanFactoryAware {
 	private BeanFactory beanFactory;
 	@Override
 	public Cat getObject() throws Exception {
-		beanFactory.getBean("chicken");
-		return new Cat();
+ 		return new Cat();
 	}
 
 
