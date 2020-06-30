@@ -26,6 +26,13 @@ public class Main {
 		ChildBeanDefinition childBeanDefinition = new ChildBeanDefinition("rootCompany");
 		defaultListableBeanFactory.registerBeanDefinition("childCompany", childBeanDefinition);
 
+		defaultListableBeanFactory.addBeanPostProcessor(new MergedBeanDefinitionPostProcessor() {
+			@Override
+			public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
+				System.out.println("beanName:" + beanName);
+			}
+		});
+
 		System.out.println(defaultListableBeanFactory.getBean("rootCompany"));
 		System.out.println(defaultListableBeanFactory.getBean("childCompany"));
 		System.out.println(defaultListableBeanFactory.getBean("rootCompany") == defaultListableBeanFactory.getBean("childCompany"));
