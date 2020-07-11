@@ -8,6 +8,6 @@ public class Main {
 		ClassPathXmlApplicationContext classPathXmlApplicationContext =
 				new ClassPathXmlApplicationContext("coderLi.xml");
 
-
+		System.out.println();
 	}
 }
