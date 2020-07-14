@@ -73,7 +73,7 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 
 
 	/**
-	 * 注册一系列常用的类型的属性编辑器、注册后、一旦某个实体bena 中存在一些 class 类型的属性、spring 就会调用对应的
+	 * 注册一系列常用的类型的属性编辑器、注册后、一旦某个实体 bean 中存在一些 class 类型的属性、spring 就会调用对应的
 	 * 属性编辑器、将配置中定义的 String 类型变为对应的 类型
 	 * Populate the given {@code registry} with the following resource editors:
 	 * ResourceEditor, InputStreamEditor, InputSourceEditor, FileEditor, URLEditor,
