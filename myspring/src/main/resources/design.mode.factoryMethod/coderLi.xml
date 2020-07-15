@@ -1,0 +1,14 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+	<bean class="com.demo.design.mode.factoryMethod.AppleFactoryBean" id="appleFactoryBean"/>
+	<bean class="com.demo.design.mode.Apple" id="apple" factory-bean="appleFactoryBean"/>
+
+	<bean class="com.demo.design.mode.factoryMethod.OrangeFactoryBean" id="orangeFactoryBean"/>
+	<bean class="com.demo.design.mode.Orange" id="orange" factory-bean="orangeFactoryBean"/>
+
+
+</beans>

@@ -1,0 +1,16 @@
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns="http://www.springframework.org/schema/beans"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+	<bean id="apple" class="com.demo.design.mode.simpleFactory.FruitFactory" factory-method="getFruit" >
+		<constructor-arg name="fruitName" value="apple"/>
+	</bean>
+
+	<bean id="orange" class="com.demo.design.mode.simpleFactory.FruitFactory" factory-method="getFruit">
+		<constructor-arg name="fruitName" value="orange"/>
+	</bean>
+
+
+</beans>
