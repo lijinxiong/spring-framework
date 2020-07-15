@@ -16,11 +16,12 @@
 
 package org.springframework.expression;
 
-import java.util.List;
-
 import org.springframework.lang.Nullable;
 
+import java.util.List;
+
 /**
+ * 估值上下文接口
  * Expressions are executed in an evaluation context. It is in this context that
  * references are resolved when encountered during expression evaluation.
  *
@@ -85,6 +86,7 @@ public interface EvaluationContext {
 	OperatorOverloader getOperatorOverloader();
 
 	/**
+	 * 为当前的上下文环境增加一个变量
 	 * Set a named variable within this evaluation context to a specified value.
 	 * @param name the name of the variable to set
 	 * @param value the value to be placed in the variable

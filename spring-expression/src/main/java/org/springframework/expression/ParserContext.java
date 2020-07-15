@@ -17,6 +17,8 @@
 package org.springframework.expression;
 
 /**
+ *
+ * 解释器上下文接口、
  * Input provided to an expression parser that can influence an expression
  * parsing/compilation routine.
  *

@@ -20,6 +20,7 @@ import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 
 /**
+ * 表达式的抽象、是经过解析获得字符串表达式的
  * An expression capable of evaluating itself against context objects.
  * Encapsulates the details of a previously parsed expression string.
  * Provides a common abstraction for expression evaluation.
@@ -38,6 +39,7 @@ public interface Expression {
 	String getExpressionString();
 
 	/**
+	 * 获取表达式的值
 	 * Evaluate this expression in the default standard context.
 	 * @return the evaluation result
 	 * @throws EvaluationException if there is a problem during evaluation
@@ -78,6 +80,7 @@ public interface Expression {
 	<T> T getValue(@Nullable Object rootObject, @Nullable Class<T> desiredResultType) throws EvaluationException;
 
 	/**
+	 * 从 evaluationContext 钟获取表达式对于当前的上下文的值
 	 * Evaluate this expression in the provided context and return the result
 	 * of evaluation.
 	 * @param context the context in which to evaluate the expression
