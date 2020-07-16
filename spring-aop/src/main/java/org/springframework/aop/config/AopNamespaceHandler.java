@@ -55,6 +55,7 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 public class AopNamespaceHandler extends NamespaceHandlerSupport {
 
 	/**
+	 *
 	 * Register the {@link BeanDefinitionParser BeanDefinitionParsers} for the
 	 * '{@code config}', '{@code spring-configured}', '{@code aspectj-autoproxy}'
 	 * and '{@code scoped-proxy}' tags.
@@ -63,6 +64,7 @@ public class AopNamespaceHandler extends NamespaceHandlerSupport {
 	public void init() {
 		// In 2.0 XSD as well as in 2.1 XSD.
 		registerBeanDefinitionParser("config", new ConfigBeanDefinitionParser());
+		// 使用 AspectJAutoProxyBeanDefinitionParser 进行解释
 		registerBeanDefinitionParser("aspectj-autoproxy", new AspectJAutoProxyBeanDefinitionParser());
 		registerBeanDefinitionDecorator("scoped-proxy", new ScopedProxyBeanDefinitionDecorator());
 
