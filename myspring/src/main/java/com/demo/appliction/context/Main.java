@@ -8,6 +8,8 @@ public class Main {
 		ClassPathXmlApplicationContext classPathXmlApplicationContext =
 				new ClassPathXmlApplicationContext("coderLi.xml");
 
+		classPathXmlApplicationContext.publishEvent(new MyEvent("hello", "msg"));
+
 		System.out.println();
 	}
 }

@@ -5,7 +5,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-
+	<bean class="com.demo.appliction.context.MyEventListener" id="myEventListener"/>
 
 	<bean class="com.demo.data.CatFactoryBean" id="cat"/>
 </beans>
