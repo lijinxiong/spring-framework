@@ -24,6 +24,14 @@ import org.springframework.lang.Nullable;
 import org.w3c.dom.Element;
 
 /**
+ * Spring	Aop 部分使用 JDK 动态代理或者 CGLIB 来为目标对象创建代理 建议使用 JDK 动态代理
+ * 如果被代理的目标对象实现了至少一个接口、则会使用 JDK 代理
+ * 所有该目标类型实现的接口都将被代理、若该目标对象没有实现任何接口、则创建一个 CGLIB 代理
+ * 如果你希望强制使用CGLIB 代理、也是可以的、但是需要考虑两个问题
+ * 1. 无法通知 final 的方法
+ * 2. 需要将 cglib 二进制发行包放在 classpath 下面
+ * 强制使用 cglib 的话需要 配置
+ * <aop:config proxy-target-class="true"></>
  * Utility class for handling registration of auto-proxy creators used internally
  * by the '{@code aop}' namespace tags.
  *
@@ -88,10 +96,14 @@ public abstract class AopNamespaceUtils {
 
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, @Nullable Element sourceElement) {
 		if (sourceElement != null) {
+			// 对于 proxy-target-class 属性的处理
 			boolean proxyTargetClass = Boolean.parseBoolean(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
 			if (proxyTargetClass) {
+				// 强制使用的过程其实也是设置属性的过程
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
+			// 对于 expose-proxy 属性的处理
+			// 对于对象内 方法间的掉哟过、可以设置这个 属性为true 来进行切面增强
 			boolean exposeProxy = Boolean.parseBoolean(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
 			if (exposeProxy) {
 				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);

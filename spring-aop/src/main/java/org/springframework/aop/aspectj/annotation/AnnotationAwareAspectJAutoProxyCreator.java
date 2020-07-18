@@ -28,6 +28,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 对于 AOP 的实现、基本上都是靠 AnnotationAwareAspectJAutoProxyCreator 去完成的
+ * 他可以根据 @Point 注解定义的切点来自动代理相匹配的 bean 但是为了配置简便、
+ * Spring 使用来 自定义配置来帮助我们自动注册 AnnotationAwareAspectJAutoProxyCreator
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
  *

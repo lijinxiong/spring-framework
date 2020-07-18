@@ -67,7 +67,13 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
 	}
 
-
+	/**
+	 *
+	 * @param beanClass the class of the bean to advise
+	 * @param beanName the name of the bean
+	 * @param targetSource
+	 * @return
+	 */
 	@Override
 	@Nullable
 	protected Object[] getAdvicesAndAdvisorsForBean(
