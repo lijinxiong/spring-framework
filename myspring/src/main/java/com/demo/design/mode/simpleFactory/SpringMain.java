@@ -20,10 +20,8 @@ public class SpringMain {
 		DefaultListableBeanFactory defaultListableBeanFactory = new DefaultListableBeanFactory();
 		BeanDefinitionReader definitionReader = new XmlBeanDefinitionReader(defaultListableBeanFactory);
 		definitionReader.loadBeanDefinitions(resource);
-
 		System.out.println(defaultListableBeanFactory.getBean("apple", Fruit.class).getName());
 		System.out.println(defaultListableBeanFactory.getBean("orange", Fruit.class).getName());
-
 	}
 
 
