@@ -2,15 +2,12 @@
 	   xmlns="http://www.springframework.org/schema/beans"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+<bean class="com.demo.design.mode.abstractFactory.ConcreteFactory1" id="foxconnFactory"/>
+<bean id="foxconnApple" factory-bean="foxconnFactory" factory-method="createApple"/>
+<bean id="foxconnOrange" factory-bean="foxconnFactory" factory-method="createOrange"/>
 
-
-	<bean class="com.demo.design.mode.abstractFactory.ConcreteFactory1" id="foxconnFactory"/>
-	<bean class="com.demo.design.mode.Apple" id="foxconnApple"/>
-	<bean class="com.demo.design.mode.Orange" id="foxconnOrange"/>
-
-	<bean class="com.demo.design.mode.abstractFactory.ConcreteFactory2" id="haierFactory"/>
-	<bean class="com.demo.design.mode.Apple" id="haierApple"/>
-	<bean class="com.demo.design.mode.Orange" id="haierOrange"/>
-
+<bean class="com.demo.design.mode.abstractFactory.ConcreteFactory2" id="haierFactory"/>
+<bean id="haierApple" factory-bean="haierFactory" factory-method="createApple"/>
+<bean id="haierOrange" factory-bean="haierFactory" factory-method="createOrange"/>
 
 </beans>
